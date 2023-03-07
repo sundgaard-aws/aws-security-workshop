@@ -13,5 +13,6 @@
     <ProjectReference Include="..\AmazonS3\AmazonS3.csproj"/>
     <ProjectReference Include="..\PGPCrypto\PGPCrypto.csproj"/>
     <ProjectReference Include="..\AWSSecretsManager\AWSSecretsManager.csproj"/>
+    <ProjectReference Include="..\AWSParameterStore\AWSParameterStore.csproj"/>
   </ItemGroup>
 </Project>
