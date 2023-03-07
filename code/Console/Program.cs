@@ -33,7 +33,13 @@ public class Program {
     await cryptoService.GenerateKeyPairAsync();
 
     var paymentRequest=new PaymentRequestDTO{ PaymentsFileGUID="61b889b2-10fc-4dcd-a280-8720cfa50c7f",PaymentDate=new DateTime(2023,3,1)};
+    await paymentBO.CreatePaymentRequestAsync(paymentRequest);
+    Thread.Sleep(500);
+    //var paymentRequest=new PaymentRequestDTO{ PaymentsFileGUID="61b889b2-10fc-4dcd-a280-8720cfa50c7f",PaymentDate=new DateTime(2023,3,1)};
     await paymentBO.ProcessPaymentsAsync(paymentRequest);
+    Thread.Sleep(500);
+    //var paymentRequest=new PaymentRequestDTO{ PaymentsFileGUID="61b889b2-10fc-4dcd-a280-8720cfa50c7f",PaymentDate=new DateTime(2023,3,1)};
+    await paymentBO.CreatePaymentsResponseAsync(paymentRequest);
     //var secret=new SecretDTO();
     //secretsService.CreateSecret("secret1", secret).ConfigureAwait(false).GetAwaiter().GetResult();
     //var secret=secretsService.RestoreSecret<SecretDTO>("demo/secret2").ConfigureAwait(false).GetAwaiter().GetResult();

@@ -12,13 +12,12 @@ namespace PGPCrypto
     {
         private const string PGPPublicKeyName="pgp-public.key";
         private const string PGPPrivateKeyName="pgp-private.key";
-        private string userName;
-        private string passPhrase;
+        private string? userName;
+        private string? passPhrase;
 
         private string TempPath { get { return Path.Join(Path.GetTempPath(),"pgp"); } }
 
-        public PGPCryptoService(string userName, string passPhrase) {
-            LazyInit(userName, passPhrase);
+        public PGPCryptoService() {
         }
 
         public void LazyInit(string userName, string passPhrase) {
@@ -35,6 +34,7 @@ namespace PGPCrypto
                 PGPPublicKeyName=PGPPublicKeyName,
                 PGPPrivateKeyName=PGPPrivateKeyName
             };
+            Console.WriteLine($"Key pair generated in folder={TempPath}");
             return kp;
         }
 

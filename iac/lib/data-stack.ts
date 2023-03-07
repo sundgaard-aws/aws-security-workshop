@@ -35,7 +35,7 @@ export class DataStack extends Core.Stack {
         if(props==undefined) throw("Please make sure that the properties are initialized!");
         this.props=props;
         this.keyAlias=props?.key.addAlias(v4().toString());
-        //this.createLoginTable();
+        this.createPaymentRequestTable();
         this.PaymentRequestQueue=this.createPaymentRequestSQSQueue();
         this.PaymentResponseQueue=this.createPaymentResponseSQSQueue();
         this.PaymentInputBucket=this.createPaymentInputBucket();
@@ -167,12 +167,13 @@ export class DataStack extends Core.Stack {
         return bucket;
     }    
     
-    private createLoginTable() {
-        var name = MetaData.PREFIX+"login";
+    private createPaymentRequestTable() {
+        var name = MetaData.PREFIX+"pay-req";
         new Table(this, name, {
             tableName: name,
             billingMode: BillingMode.PAY_PER_REQUEST,
-            partitionKey: {name: "email", type: AttributeType.STRING}
+            partitionKey: {name: "PaymentDate", type: AttributeType.STRING},
+            sortKey: {name: "PaymentsFileGUID", type: AttributeType.STRING}
         });
     }
 
