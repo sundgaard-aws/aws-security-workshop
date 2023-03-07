@@ -27,12 +27,12 @@ namespace OM.AWS.Demo.Config
 
         public string GetAppName()
         {
-            return "aws-sec-workshop-app";
+            return "sec-workshop-app";
         }
 
         public string GetAppPrefix()
         {
-            return "aws-sec-";
+            return "sec-ws-";
         }
     }
 }

@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 
 export class MetaData {
-  public static readonly PREFIX:string = "aws-sec-";
+  public static readonly PREFIX:string = "sec-ws-";
   public static readonly NAME:string = "Name";
 }
