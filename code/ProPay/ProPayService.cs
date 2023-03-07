@@ -16,21 +16,19 @@ namespace OM.AWS.Demo.ProPay
             this.cryptoService=cryptoService;
         }
 
-        public Task ProcessPaymentsAsync(List<PaymentDTO> payments)
+        public async Task ProcessPaymentsAsync(List<PaymentDTO> payments)
         {
             Console.WriteLine("ProcessPaymentsAsync started...");
             var paymentsJSON=JsonSerializer.Serialize(payments);
-            cryptoService.Encrypt(paymentsJSON);
+            await cryptoService.EncryptAsync(paymentsJSON);
             Console.WriteLine("ProcessPaymentsAsync ended.");
-            return Task.CompletedTask;
         }
 
-        public Task ProcessPaymentsAsync(FileInfo paymentsFile)
+        public async Task ProcessPaymentsAsync(FileInfo paymentsFile)
         {
             Console.WriteLine("ProcessPaymentsAsync started...");
-            cryptoService.Encrypt(paymentsFile);
+            await cryptoService.EncryptAsync(paymentsFile);
             Console.WriteLine("ProcessPaymentsAsync ended.");
-            return Task.CompletedTask;
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using OM.AWS.Demo.DTL;
 using OM.AWS.Demo.SL;
 using PgpCore;
 
@@ -11,12 +12,30 @@ namespace PGPCrypto
     {
         private const string PGPPublicKeyName="pgp-public.key";
         private const string PGPPrivateKeyName="pgp-private.key";
-        private const string passphrase="password";
+        private string userName;
+        private string passPhrase;
 
         private string TempPath { get { return Path.Join(Path.GetTempPath(),"pgp"); } }
-        public void GenerateKeyPair() {
+
+        public PGPCryptoService(string userName, string passPhrase) {
+            LazyInit(userName, passPhrase);
+        }
+
+        public void LazyInit(string userName, string passPhrase) {
+            if(String.IsNullOrEmpty(userName)) throw new Exception("Please set userName!");
+            if(String.IsNullOrEmpty(passPhrase)) throw new Exception("Please set passPhrase!");
+            this.userName=userName;
+            this.passPhrase=passPhrase;
+        }        
+
+        public async Task<KeyPairDTO> GenerateKeyPairAsync() {
             Directory.CreateDirectory(TempPath);
-            PGP.Instance.GenerateKey(Path.Join(TempPath,PGPPublicKeyName), Path.Join(TempPath,PGPPrivateKeyName), "email@email.com", passphrase);            
+            PGP.Instance.GenerateKey(Path.Join(TempPath,PGPPublicKeyName), Path.Join(TempPath,PGPPrivateKeyName),this.userName,this.passPhrase);
+            var kp=new KeyPairDTO {
+                PGPPublicKeyName=PGPPublicKeyName,
+                PGPPrivateKeyName=PGPPrivateKeyName
+            };
+            return kp;
         }
 
         private EncryptionKeys GetEncryptionKeys() {
@@ -24,11 +43,11 @@ namespace PGPCrypto
             //secretsService.CreateSecret("secret1", secret).ConfigureAwait(false).GetAwaiter().GetResult();
             //var secret = secretsService.RestoreSecret<SecretDTO>("demo/secret2").ConfigureAwait(false).GetAwaiter().GetResult();
             //Console.WriteLine($"KeyType={secret.keyType}");
-            var encKeys=new EncryptionKeys(new FileInfo(Path.Join(TempPath,PGPPublicKeyName)), new FileInfo(Path.Join(TempPath,PGPPrivateKeyName)), passphrase);
+            var encKeys=new EncryptionKeys(new FileInfo(Path.Join(TempPath,PGPPublicKeyName)), new FileInfo(Path.Join(TempPath,PGPPrivateKeyName)), this.passPhrase);
             return encKeys;
         }
 
-        public async Task<FileInfo> Encrypt(FileInfo dataFile) {
+        public async Task<FileInfo> EncryptAsync(FileInfo dataFile) {
             using (PGP pgp = new PGP(GetEncryptionKeys()))
             {                
                 Console.WriteLine(@$"Encrypting file via PGP {TempPath}...");
@@ -39,7 +58,7 @@ namespace PGPCrypto
             }
         }
 
-        public async Task<string> Encrypt(string data) {
+        public async Task<string> EncryptAsync(string data) {
             using (PGP pgp = new PGP(GetEncryptionKeys()))
             {                
                 Console.WriteLine(@$"Encrypting data via PGP...");
@@ -52,7 +71,7 @@ namespace PGPCrypto
             }
         }        
 
-        public async Task<FileInfo> Decrypt(FileInfo encryptedFile) {
+        public async Task<FileInfo> DecryptAsync(FileInfo encryptedFile) {
             using (PGP pgp = new PGP(GetEncryptionKeys()))
             {                
                 var decryptedFile=new FileInfo(Path.Join(TempPath,"content__decrypted.txt"));
@@ -72,8 +91,8 @@ namespace PGPCrypto
 
         public void Simple() {
             Directory.CreateDirectory(TempPath);
-            PGP.Instance.GenerateKey(Path.Join(TempPath,PGPPublicKeyName), Path.Join(TempPath,PGPPrivateKeyName), "email@email.com", passphrase);
-            var encKeys=new EncryptionKeys(new FileInfo(Path.Join(TempPath,PGPPublicKeyName)), new FileInfo(Path.Join(TempPath,PGPPrivateKeyName)), passphrase);
+            PGP.Instance.GenerateKey(Path.Join(TempPath,PGPPublicKeyName), Path.Join(TempPath,PGPPrivateKeyName), this.userName, this.passPhrase);
+            var encKeys=new EncryptionKeys(new FileInfo(Path.Join(TempPath,PGPPublicKeyName)), new FileInfo(Path.Join(TempPath,PGPPrivateKeyName)), this.passPhrase);
             using (PGP pgp = new PGP(encKeys))
             {                
                 Console.WriteLine(@$"New PGP key created in folder {TempPath}.");
