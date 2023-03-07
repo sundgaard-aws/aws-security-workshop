@@ -1,0 +1,52 @@
+{
+  "name": "pgp-demo",
+  "version": "0.1.0",
+  "bin": {
+    "iac": "bin/app.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "^1.192.0",
+    "@aws-cdk/assertions": "^1.192.0",
+    "@types/jest": "^26.0.10",
+    "@types/node": "^18.14.6",
+    "@types/uuid": "^8.3.0",
+    "aws-cdk": "^2.65.0",
+    "jest": "^29.4.2",
+    "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@aws-cdk/assert": "^1.192.0",
+    "@aws-cdk/assertions": "^1.192.0",
+    "@aws-cdk/aws-apigatewayv2": "^1.192.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "^1.192.0",
+    "@aws-cdk/aws-cloudfront": "^1.192.0",
+    "@aws-cdk/aws-cloudfront-origins": "^1.192.0",
+    "@aws-cdk/aws-codebuild": "^1.192.0",
+    "@aws-cdk/aws-codedeploy": "^1.192.0",
+    "@aws-cdk/aws-codepipeline": "^1.192.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.192.0",
+    "@aws-cdk/aws-dynamodb": "^1.192.0",
+    "@aws-cdk/aws-ec2": "^1.192.0",
+    "@aws-cdk/aws-iam": "^1.192.0",
+    "@aws-cdk/aws-kms": "^1.192.0",
+    "@aws-cdk/aws-lambda": "^1.192.0",
+    "@aws-cdk/aws-lambda-event-sources": "^1.192.0",
+    "@aws-cdk/aws-s3": "^1.192.0",
+    "@aws-cdk/aws-s3-deployment": "^1.192.0",
+    "@aws-cdk/aws-s3-notifications": "^1.192.0",
+    "@aws-cdk/aws-secretsmanager": "^1.192.0",
+    "@aws-cdk/aws-sqs": "^1.192.0",
+    "@aws-cdk/core": "^1.192.0",
+    "source-map-support": "^0.5.16",
+    "uuid": "^8.3.2",
+    "@types/node": "^18.14.6"
+  }
+}

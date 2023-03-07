@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="PgpCore" Version="5.9.0"/>
+    <ProjectReference Include="..\SL\SL.csproj"/>
+  </ItemGroup>
+</Project>

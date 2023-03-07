@@ -1,0 +1,587 @@
+{
+ "Resources": {
+  "awssecvpc1A0F9841": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.10.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-sec-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/Resource"
+   }
+  },
+  "awssecvpcawssecprivatesneSubnet1SubnetC0E1AABC": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.10.0.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "aws-sec-private-sne"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-sec-isolated-sne"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-private-sneSubnet1/Subnet"
+   }
+  },
+  "awssecvpcawssecprivatesneSubnet1RouteTable89102EBA": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-sec-isolated-rt"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-private-sneSubnet1/RouteTable"
+   }
+  },
+  "awssecvpcawssecprivatesneSubnet1RouteTableAssociation3324605B": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "awssecvpcawssecprivatesneSubnet1RouteTable89102EBA"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecprivatesneSubnet1SubnetC0E1AABC"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-private-sneSubnet1/RouteTableAssociation"
+   }
+  },
+  "awssecvpcawssecprivatesneSubnet2Subnet914DAB4B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.10.1.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "aws-sec-private-sne"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-sec-isolated-sne"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-private-sneSubnet2/Subnet"
+   }
+  },
+  "awssecvpcawssecprivatesneSubnet2RouteTableC648940E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-sec-isolated-rt"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-private-sneSubnet2/RouteTable"
+   }
+  },
+  "awssecvpcawssecprivatesneSubnet2RouteTableAssociation97BD21A6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "awssecvpcawssecprivatesneSubnet2RouteTableC648940E"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecprivatesneSubnet2Subnet914DAB4B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-private-sneSubnet2/RouteTableAssociation"
+   }
+  },
+  "awssecvpcawssecpublicsneSubnet1SubnetD01A6F8D": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.10.2.0/25",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "aws-sec-public-sne"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-sec-public-sne"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-public-sneSubnet1/Subnet"
+   }
+  },
+  "awssecvpcawssecpublicsneSubnet1RouteTableBDE0C99D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-sec-public-rt"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-public-sneSubnet1/RouteTable"
+   }
+  },
+  "awssecvpcawssecpublicsneSubnet1RouteTableAssociation44446341": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet1RouteTableBDE0C99D"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet1SubnetD01A6F8D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-public-sneSubnet1/RouteTableAssociation"
+   }
+  },
+  "awssecvpcawssecpublicsneSubnet1DefaultRoute13128672": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet1RouteTableBDE0C99D"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "awssecvpcIGW9AB595CA"
+    }
+   },
+   "DependsOn": [
+    "awssecvpcVPCGWB16C173D"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-public-sneSubnet1/DefaultRoute"
+   }
+  },
+  "awssecvpcawssecpublicsneSubnet2Subnet1FD2D935": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.10.2.128/25",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "aws-sec-public-sne"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-sec-public-sne"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-public-sneSubnet2/Subnet"
+   }
+  },
+  "awssecvpcawssecpublicsneSubnet2RouteTableE604E240": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-sec-public-rt"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-public-sneSubnet2/RouteTable"
+   }
+  },
+  "awssecvpcawssecpublicsneSubnet2RouteTableAssociationCEBFE229": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet2RouteTableE604E240"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet2Subnet1FD2D935"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-public-sneSubnet2/RouteTableAssociation"
+   }
+  },
+  "awssecvpcawssecpublicsneSubnet2DefaultRoute675C6129": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet2RouteTableE604E240"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "awssecvpcIGW9AB595CA"
+    }
+   },
+   "DependsOn": [
+    "awssecvpcVPCGWB16C173D"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/aws-sec-public-sneSubnet2/DefaultRoute"
+   }
+  },
+  "awssecvpcIGW9AB595CA": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-sec-igw"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/IGW"
+   }
+  },
+  "awssecvpcVPCGWB16C173D": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "InternetGatewayId": {
+     "Ref": "awssecvpcIGW9AB595CA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-vpc/VPCGW"
+   }
+  },
+  "awssecpublicnacl560544C2": {
+   "Type": "AWS::EC2::NetworkAcl",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-sec-public-nacl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-public-nacl/Resource"
+   }
+  },
+  "awssecpublicnaclDefaultAssociationawssecnetworkstackawssecvpcawssecpublicsneSubnet18FC0F4152DD62C98": {
+   "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecpublicnacl560544C2"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet1SubnetD01A6F8D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-public-nacl/DefaultAssociationawssecnetworkstackawssecvpcawssecpublicsneSubnet18FC0F415/Resource"
+   }
+  },
+  "awssecpublicnaclDefaultAssociationawssecnetworkstackawssecvpcawssecpublicsneSubnet26DDA3D40BD56186E": {
+   "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecpublicnacl560544C2"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet2Subnet1FD2D935"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-public-nacl/DefaultAssociationawssecnetworkstackawssecvpcawssecpublicsneSubnet26DDA3D40/Resource"
+   }
+  },
+  "awssecpublicnaclawssecpublicnaclallowallinboundF53888EC": {
+   "Type": "AWS::EC2::NetworkAclEntry",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecpublicnacl560544C2"
+    },
+    "Protocol": -1,
+    "RuleAction": "allow",
+    "RuleNumber": 500,
+    "CidrBlock": "0.0.0.0/0",
+    "Egress": false
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-public-nacl/aws-sec-public-nacl-allow-all-inbound/Resource"
+   }
+  },
+  "awssecpublicnaclawssecpublicnaclallowalloutbound7FBDD4D6": {
+   "Type": "AWS::EC2::NetworkAclEntry",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecpublicnacl560544C2"
+    },
+    "Protocol": -1,
+    "RuleAction": "allow",
+    "RuleNumber": 500,
+    "CidrBlock": "0.0.0.0/0",
+    "Egress": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-public-nacl/aws-sec-public-nacl-allow-all-outbound/Resource"
+   }
+  },
+  "awssecpublicnaclawssecpublicnaclassocawssecnetworkstackawssecvpcawssecpublicsneSubnet18FC0F415F7022854": {
+   "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecpublicnacl560544C2"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet1SubnetD01A6F8D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-public-nacl/aws-sec-public-nacl-assocawssecnetworkstackawssecvpcawssecpublicsneSubnet18FC0F415/Resource"
+   }
+  },
+  "awssecpublicnaclawssecpublicnaclassocawssecnetworkstackawssecvpcawssecpublicsneSubnet26DDA3D401A1871D6": {
+   "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecpublicnacl560544C2"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecpublicsneSubnet2Subnet1FD2D935"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-public-nacl/aws-sec-public-nacl-assocawssecnetworkstackawssecvpcawssecpublicsneSubnet26DDA3D40/Resource"
+   }
+  },
+  "awssecprivatenacl527D62C3": {
+   "Type": "AWS::EC2::NetworkAcl",
+   "Properties": {
+    "VpcId": {
+     "Ref": "awssecvpc1A0F9841"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-sec-private-nacl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-private-nacl/Resource"
+   }
+  },
+  "awssecprivatenaclDefaultAssociationawssecnetworkstackawssecvpcawssecprivatesneSubnet1A896077E10CC33AB": {
+   "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecprivatenacl527D62C3"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecprivatesneSubnet1SubnetC0E1AABC"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-private-nacl/DefaultAssociationawssecnetworkstackawssecvpcawssecprivatesneSubnet1A896077E/Resource"
+   }
+  },
+  "awssecprivatenaclDefaultAssociationawssecnetworkstackawssecvpcawssecprivatesneSubnet2C56BBDC4EE422DB0": {
+   "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecprivatenacl527D62C3"
+    },
+    "SubnetId": {
+     "Ref": "awssecvpcawssecprivatesneSubnet2Subnet914DAB4B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-private-nacl/DefaultAssociationawssecnetworkstackawssecvpcawssecprivatesneSubnet2C56BBDC4/Resource"
+   }
+  },
+  "awssecprivatenaclawssecprivatenaclallowallinbound6A0A230C": {
+   "Type": "AWS::EC2::NetworkAclEntry",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecprivatenacl527D62C3"
+    },
+    "Protocol": -1,
+    "RuleAction": "allow",
+    "RuleNumber": 500,
+    "CidrBlock": "0.0.0.0/0",
+    "Egress": false
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-private-nacl/aws-sec-private-nacl-allow-all-inbound/Resource"
+   }
+  },
+  "awssecprivatenaclawssecprivatenacldenyinboundssh3E40CBE4": {
+   "Type": "AWS::EC2::NetworkAclEntry",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecprivatenacl527D62C3"
+    },
+    "Protocol": 6,
+    "RuleAction": "deny",
+    "RuleNumber": 100,
+    "CidrBlock": "0.0.0.0/0",
+    "Egress": false,
+    "PortRange": {
+     "From": 22,
+     "To": 22
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-private-nacl/aws-sec-private-nacl-deny-inbound-ssh/Resource"
+   }
+  },
+  "awssecprivatenaclawssecprivatenaclallowalloutboundBD7BB372": {
+   "Type": "AWS::EC2::NetworkAclEntry",
+   "Properties": {
+    "NetworkAclId": {
+     "Ref": "awssecprivatenacl527D62C3"
+    },
+    "Protocol": -1,
+    "RuleAction": "allow",
+    "RuleNumber": 500,
+    "CidrBlock": "0.0.0.0/0",
+    "Egress": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/aws-sec-private-nacl/aws-sec-private-nacl-allow-all-outbound/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22QwW7CMAyGn2X3kFIESNxWVdPEZaoK6j01nhbaOlPitEJV350WGAG0k+3P9v9bjmW8Wcn527vq3AwOVdSDsSj7HSuoRI7OeAsoUkOOrQcW6Tf90UFMSwgL2Re/MHWKLBWZ1a1i3PmS8DIestx4xr0qaww8sMQ5A1qxNiQyX9YaXjanZEuMdoSfo0WnTjfTW5XwePVPg8TiC7kztkqgnkYeqqtmAI+u96P+bwf6QWxPz8IXNAyCzAHl0UVtvJbxcvzs0Wk9s55YNyjzazwDNSJAlHYBAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-sec-network-stack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefawssecvpc1A0F98419033A4E7": {
+   "Value": {
+    "Ref": "awssecvpc1A0F9841"
+   },
+   "Export": {
+    "Name": "aws-sec-network-stack:ExportsOutputRefawssecvpc1A0F98419033A4E7"
+   }
+  },
+  "ExportsOutputRefawssecvpcawssecprivatesneSubnet1SubnetC0E1AABCDD3676B3": {
+   "Value": {
+    "Ref": "awssecvpcawssecprivatesneSubnet1SubnetC0E1AABC"
+   },
+   "Export": {
+    "Name": "aws-sec-network-stack:ExportsOutputRefawssecvpcawssecprivatesneSubnet1SubnetC0E1AABCDD3676B3"
+   }
+  },
+  "ExportsOutputRefawssecvpcawssecprivatesneSubnet2Subnet914DAB4B0BBF01DC": {
+   "Value": {
+    "Ref": "awssecvpcawssecprivatesneSubnet2Subnet914DAB4B"
+   },
+   "Export": {
+    "Name": "aws-sec-network-stack:ExportsOutputRefawssecvpcawssecprivatesneSubnet2Subnet914DAB4B0BBF01DC"
+   }
+  }
+ }
+}

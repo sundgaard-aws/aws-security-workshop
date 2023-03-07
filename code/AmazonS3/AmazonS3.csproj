@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.103.9" />
+    <ProjectReference Include="..\SL\SL.csproj"/>
+    <ProjectReference Include="..\DTL\DTL.csproj"/>
+  </ItemGroup>
+</Project>

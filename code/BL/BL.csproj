@@ -1,0 +1,13 @@
+  <Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <TargetFramework>net6.0</TargetFramework>
+      <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\SL\SL.csproj"/>
+      <ProjectReference Include="..\DTL\DTL.csproj"/>
+      <ProjectReference Include="..\AmazonS3\AmazonS3.csproj"/>
+      <ProjectReference Include="..\AmazonDynamoDB\AmazonDynamoDB.csproj"/>
+      <ProjectReference Include="..\AWSSecretsManager\AWSSecretsManager.csproj"/>
+    </ItemGroup>
+  </Project>
