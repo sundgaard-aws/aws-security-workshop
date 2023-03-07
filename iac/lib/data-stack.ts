@@ -27,6 +27,7 @@ export class DataStack extends Core.Stack {
     private PaymentResponseBucket:IBucket;
     private PaymentRequestQueue: {queue:IQueue,dlq:IQueue};
     private PaymentResponseQueue: {queue:IQueue,dlq:IQueue};
+    private PaymentInputBucket: IBucket;
     
     constructor(scope: Core.Construct, id: string, apiRole: IRole, props?: DataStackProps) {
         super(scope, id, props);
@@ -37,6 +38,7 @@ export class DataStack extends Core.Stack {
         //this.createLoginTable();
         this.PaymentRequestQueue=this.createPaymentRequestSQSQueue();
         this.PaymentResponseQueue=this.createPaymentResponseSQSQueue();
+        this.PaymentInputBucket=this.createPaymentInputBucket();
         this.PaymentRequestBucket=this.createRequestBucket();
         this.PaymentResponseBucket=this.createResponseBucket();
         this.addExtraPermissions(props.key);
@@ -124,6 +126,20 @@ export class DataStack extends Core.Stack {
         }));        
     }
 
+    private createPaymentInputBucket():IBucket {
+        var name = MetaData.PREFIX+"pay-inp";
+        var bucket = new Bucket(this, name, {
+            bucketName: name, 
+            encryptionKey: this.keyAlias,
+            removalPolicy: RemovalPolicy.DESTROY
+        });
+        bucket.grantReadWrite(this.apiRole);
+        this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentInputBucketName", name, SSM.ParameterType.STRING);
+        //bucket.addEventNotification(EventType.OBJECT_CREATED, new SqsDestination(this.props.sqsRequestEventTarget));
+        Core.Tags.of(bucket).add(MetaData.NAME, name);
+        return bucket;
+    }
+
     private createRequestBucket():IBucket {
         var name = MetaData.PREFIX+"pay-req";
         var bucket = new Bucket(this, name, {
@@ -131,6 +147,7 @@ export class DataStack extends Core.Stack {
             encryptionKey: this.keyAlias,
             removalPolicy: RemovalPolicy.DESTROY
         });
+        this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentRequestBucketName", name, SSM.ParameterType.STRING);
         bucket.grantReadWrite(this.apiRole);
         //bucket.addEventNotification(EventType.OBJECT_CREATED, new SqsDestination(this.props.sqsRequestEventTarget));
         Core.Tags.of(bucket).add(MetaData.NAME, name);
@@ -143,6 +160,7 @@ export class DataStack extends Core.Stack {
             bucketName: name, encryptionKey: this.keyAlias,
             removalPolicy: RemovalPolicy.DESTROY
         });
+        this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentResponseBucketName", name, SSM.ParameterType.STRING);
         bucket.grantReadWrite(this.apiRole);
         //bucket.addEventNotification(EventType.OBJECT_CREATED, new SqsDestination(this.props.sqsRequestEventTarget));
         Core.Tags.of(bucket).add(MetaData.NAME, name);

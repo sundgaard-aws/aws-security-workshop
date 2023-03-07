@@ -12,12 +12,14 @@ namespace OM.AWS.Demo.BL
         private IObjectStoreService objectStoreService;
         private IDatabaseService databaseService;
         private ISettingsService settingsService;
+        private IAppContextService appContextService;
 
-        public PaymentBO(IObjectStoreService objectStoreService, ISettingsService settingsService, IDatabaseService databaseService, IPaymentService paymentService) {
+        public PaymentBO(IAppContextService appContextService, IObjectStoreService objectStoreService, ISettingsService settingsService, IDatabaseService databaseService, IPaymentService paymentService) {
             this.paymentService=paymentService;
             this.objectStoreService=objectStoreService;
             this.databaseService=databaseService;
             this.settingsService=settingsService;
+            this.appContextService=appContextService;
         }
 
         public async Task ProcessPaymentsAsync(PaymentRequestDTO paymentRequest)
@@ -30,7 +32,7 @@ namespace OM.AWS.Demo.BL
             if(String.IsNullOrEmpty(paymentRequest.PaymentsFileGUID)) throw new Exception("Please ensure that PaymentsFileGUID is valid!");
             if(paymentRequest.PaymentDate==null) throw new Exception("Please ensure that PaymentDate is valid!");
             
-            var paymentInputBucketName=await settingsService.GetSettingAsync("PaymentInputBucketName");     
+            var paymentInputBucketName=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"PaymentInputBucketName");     
             paymentRequest.Status=PaymentRequestDTO.StatusEnum.CREATED;       
             await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);
             var paymentsFile=await objectStoreService.GetObjectAsync(paymentInputBucketName, paymentRequest.PaymentsFileGUID);
