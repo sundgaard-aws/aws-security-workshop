@@ -18,10 +18,10 @@ export class ComputeStack extends Core.Stack {
     constructor(scope: Core.Construct, id: string, vpc: IVpc, apiSecurityGroup: ISecurityGroup, apiRole:IAM.IRole, cmk:IKey, props?: Core.StackProps) {
         super(scope, id, props);
         this.apiRole=apiRole;
-        this.createArchivePaymentRequestFunction(apiSecurityGroup, vpc);
+        //this.createArchivePaymentRequestFunction(apiSecurityGroup, vpc);
         this.createSendExternalPaymentRequestFunction(apiSecurityGroup, vpc);
         this.createReceiveExternalPaymentResponseFunction(apiSecurityGroup, vpc);
-        this.createSendPaymentResponseDownstreamFunction(apiSecurityGroup, vpc);
+        this.createProPayMockFunction(apiSecurityGroup, vpc);
     }
 
     private createLambdaFunction(apiSecurityGroup: ISecurityGroup, name:string, handlerMethod:string, assetPath:string, vpc:EC2.IVpc):Lambda.Function {
@@ -46,21 +46,17 @@ export class ComputeStack extends Core.Stack {
         return lambdaFunction;
     } 
 
-    private createArchivePaymentRequestFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {
-        return this.createLambdaFunction(apiSecurityGroup, "ArchivePaymentRequestFunction", "LambdaHandler::PGPCrypt.API.FunctionHandler::Invoke", "../code/LambdaHandler/publish/", vpc);
+    private createProPayMockFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {
+        return this.createLambdaFunction(apiSecurityGroup, "ProPayMockFunction", "ProPayHandler::OM.AWS.Demo.API.FunctionHandler::Invoke", "../code/ProPayHandler/publish/", vpc);
     }
 
     private createSendExternalPaymentRequestFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {
-        return this.createLambdaFunction(apiSecurityGroup, "SendExternalPaymentRequestFunction", "LambdaHandler::PGPCrypt.API.FunctionHandler::Invoke", "../code/LambdaHandler/publish/", vpc);
+        return this.createLambdaFunction(apiSecurityGroup, "SendExternalPaymentRequestFunction", "PaymentRequestHandler::OM.AWS.Demo.API.FunctionHandler::Invoke", "../code/PaymentRequestHandler/publish/", vpc);
     }
 
     private createReceiveExternalPaymentResponseFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {
-        return this.createLambdaFunction(apiSecurityGroup, "ReceiveExternalPaymentResponseFunction", "LambdaHandler::PGPCrypt.API.FunctionHandler::Invoke", "../code/LambdaHandler/publish/", vpc);
+        return this.createLambdaFunction(apiSecurityGroup, "ReceiveExternalPaymentResponseFunction", "PaymentResponseHandler::OM.AWS.Demo.API.FunctionHandler::Invoke", "../code/PaymentResponseHandler/publish/", vpc);
     }
-
-    private createSendPaymentResponseDownstreamFunction(apiSecurityGroup: EC2.ISecurityGroup, vpc: EC2.IVpc) {
-        return this.createLambdaFunction(apiSecurityGroup, "SendPaymentResponseDownstreamFunction", "LambdaHandler::PGPCrypt.API.FunctionHandler::Invoke", "../code/LambdaHandler/publish/", vpc);
-    }     
 
     private createLambdaCodeBucket()
     {

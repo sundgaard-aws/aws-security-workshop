@@ -22,13 +22,10 @@ namespace OM.AWS.Demo.BL
             this.appContextService=appContextService;
         }
 
-        public async Task ProcessPaymentsAsync(PaymentRequestDTO paymentRequest)
+        public async Task CreatePaymentRequestAsync(PaymentRequestDTO paymentRequest)
         {
-            Console.WriteLine("Started ProcessPaymentsAsync...");
-            //var secret=new SecretDTO();
-            //secretsService.CreateSecret("secret1", secret).ConfigureAwait(false).GetAwaiter().GetResult();
-            //var secret = secretsService.RestoreSecret<SecretDTO>("demo/secret2").ConfigureAwait(false).GetAwaiter().GetResult();
-            //Console.WriteLine($"KeyType={secret.keyType}");
+            Console.WriteLine("Started CreatePaymentRequestAsync...");
+            
             if(String.IsNullOrEmpty(paymentRequest.PaymentsFileGUID)) throw new Exception("Please ensure that PaymentsFileGUID is valid!");
             if(paymentRequest.PaymentDate==null) throw new Exception("Please ensure that PaymentDate is valid!");
             
@@ -37,13 +34,35 @@ namespace OM.AWS.Demo.BL
             await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);
             var paymentsFile=await objectStoreService.GetObjectAsync(paymentInputBucketName, paymentRequest.PaymentsFileGUID);
             await paymentService.ProcessPaymentsAsync(paymentsFile);           
-            paymentRequest.Status=PaymentRequestDTO.StatusEnum.SENT_TO_EXTERNAL_PP; 
+            paymentRequest.Status=PaymentRequestDTO.StatusEnum.SENT_TO_EXTERNAL_PP;
             await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);
             //paymentRequest.Status=PaymentRequestDTO.StatusEnum.CONFIRMED;
             //await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);
             Console.WriteLine($"Payment Date={paymentRequest.PaymentDate}");
             Console.WriteLine($"Payment ID={paymentRequest.PaymentsFileGUID}");
+            Console.WriteLine("Ended CreatePaymentRequestAsync.");
+        }
+
+        public async Task ProcessPaymentsAsync(PaymentRequestDTO paymentRequest)
+        {
+            Console.WriteLine("Started ProcessPaymentsAsync...");
+            if(String.IsNullOrEmpty(paymentRequest.PaymentsFileGUID)) throw new Exception("Please ensure that PaymentsFileGUID is valid!");
+            if(paymentRequest.PaymentDate==null) throw new Exception("Please ensure that PaymentDate is valid!");
+            
+            Console.WriteLine($"Payment Date={paymentRequest.PaymentDate}");
+            Console.WriteLine($"Payment ID={paymentRequest.PaymentsFileGUID}");
             Console.WriteLine("Ended ProcessPaymentsAsync.");
         }
+
+        public async Task CreatePaymentsResponseAsync(PaymentRequestDTO paymentRequest)
+        {
+            Console.WriteLine("Started CreatePaymentsResponseAsync...");
+            if(String.IsNullOrEmpty(paymentRequest.PaymentsFileGUID)) throw new Exception("Please ensure that PaymentsFileGUID is valid!");
+            if(paymentRequest.PaymentDate==null) throw new Exception("Please ensure that PaymentDate is valid!");
+            
+            Console.WriteLine($"Payment Date={paymentRequest.PaymentDate}");
+            Console.WriteLine($"Payment ID={paymentRequest.PaymentsFileGUID}");
+            Console.WriteLine("Ended CreatePaymentsResponseAsync.");
+        }            
     }
 }

@@ -19,9 +19,17 @@ namespace PGPCrypto
             PGP.Instance.GenerateKey(Path.Join(TempPath,PGPPublicKeyName), Path.Join(TempPath,PGPPrivateKeyName), "email@email.com", passphrase);            
         }
 
-        public async Task<FileInfo> Encrypt(FileInfo dataFile) {
+        private EncryptionKeys GetEncryptionKeys() {
+            //var secret=new SecretDTO();
+            //secretsService.CreateSecret("secret1", secret).ConfigureAwait(false).GetAwaiter().GetResult();
+            //var secret = secretsService.RestoreSecret<SecretDTO>("demo/secret2").ConfigureAwait(false).GetAwaiter().GetResult();
+            //Console.WriteLine($"KeyType={secret.keyType}");
             var encKeys=new EncryptionKeys(new FileInfo(Path.Join(TempPath,PGPPublicKeyName)), new FileInfo(Path.Join(TempPath,PGPPrivateKeyName)), passphrase);
-            using (PGP pgp = new PGP(encKeys))
+            return encKeys;
+        }
+
+        public async Task<FileInfo> Encrypt(FileInfo dataFile) {
+            using (PGP pgp = new PGP(GetEncryptionKeys()))
             {                
                 Console.WriteLine(@$"Encrypting file via PGP {TempPath}...");
                 var encryptedFile=new FileInfo(Path.Join(TempPath,"content__encrypted.pgp"));
@@ -32,8 +40,7 @@ namespace PGPCrypto
         }
 
         public async Task<string> Encrypt(string data) {
-            var encKeys=new EncryptionKeys(new FileInfo(Path.Join(TempPath,PGPPublicKeyName)), new FileInfo(Path.Join(TempPath,PGPPrivateKeyName)), passphrase);
-            using (PGP pgp = new PGP(encKeys))
+            using (PGP pgp = new PGP(GetEncryptionKeys()))
             {                
                 Console.WriteLine(@$"Encrypting data via PGP...");
                 var dataMemStream=new MemoryStream();
@@ -46,8 +53,7 @@ namespace PGPCrypto
         }        
 
         public async Task<FileInfo> Decrypt(FileInfo encryptedFile) {
-            var encKeys=new EncryptionKeys(new FileInfo(Path.Join(TempPath,PGPPublicKeyName)), new FileInfo(Path.Join(TempPath,PGPPrivateKeyName)), passphrase);
-            using (PGP pgp = new PGP(encKeys))
+            using (PGP pgp = new PGP(GetEncryptionKeys()))
             {                
                 var decryptedFile=new FileInfo(Path.Join(TempPath,"content__decrypted.txt"));
                 pgp.DecryptFile(new FileInfo(Path.Join(TempPath,"content__encrypted.pgp")), decryptedFile);
@@ -56,8 +62,7 @@ namespace PGPCrypto
         }
 
         public async Task<string> Decrypt(string encryptedData) {
-            var encKeys=new EncryptionKeys(new FileInfo(Path.Join(TempPath,PGPPublicKeyName)), new FileInfo(Path.Join(TempPath,PGPPrivateKeyName)), passphrase);
-            using (PGP pgp = new PGP(encKeys))
+            using (PGP pgp = new PGP(GetEncryptionKeys()))
             {                
                 var decryptedFile=new FileInfo(Path.Join(TempPath,"content__decrypted.txt"));
                 pgp.DecryptFile(new FileInfo(Path.Join(TempPath,"content__encrypted.pgp")), decryptedFile);
