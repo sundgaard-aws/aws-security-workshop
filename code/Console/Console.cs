@@ -21,8 +21,7 @@ if(secretsService==null) throw new Exception("Please make sure that ISecretsServ
 var paymentBO=serviceProvider.GetService<PaymentBO>();
 if(paymentBO==null) throw new Exception("Please make sure that PaymentBO is initialized!");
 
-
-var paymentRequest=new PaymentRequestDTO{};
+var paymentRequest=new PaymentRequestDTO{ PaymentsFileGUID="61b889b2-10fc-4dcd-a280-8720cfa50c7f",PaymentDate=new DateTime(2023,3,1)};
 await paymentBO.ProcessPaymentsAsync(paymentRequest);
 //var secret=new SecretDTO();
 //secretsService.CreateSecret("secret1", secret).ConfigureAwait(false).GetAwaiter().GetResult();
