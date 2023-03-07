@@ -3,7 +3,7 @@ using Amazon.DynamoDBv2.DataModel;
 
 namespace OM.AWS.Demo.DTL
 {
-    [DynamoDBTable("sec-ws-pay-req")] public class PaymentRequestDTO
+    [DynamoDBTable("sec-ws-pay-req-tab")] public class PaymentRequestDTO
     {
         public enum StatusEnum { CREATED, SENT_TO_EXTERNAL_PP, CONFIRMED }
         [DynamoDBHashKey] public DateTime? PaymentDate { get; set; }

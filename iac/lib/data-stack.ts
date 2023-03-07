@@ -168,7 +168,7 @@ export class DataStack extends Core.Stack {
     }    
     
     private createPaymentRequestTable() {
-        var name = MetaData.PREFIX+"pay-req";
+        var name = MetaData.PREFIX+"pay-req-tab";
         new Table(this, name, {
             tableName: name,
             billingMode: BillingMode.PAY_PER_REQUEST,
