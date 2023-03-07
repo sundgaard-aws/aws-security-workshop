@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using OM.AWS.Demo.DTL;
 using OM.AWS.Demo.SL;
@@ -32,7 +33,7 @@ namespace OM.AWS.Demo.BL
             var paymentInputBucketName=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"PaymentInputBucketName");     
             paymentRequest.Status=PaymentRequestDTO.StatusEnum.CREATED;       
             await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);
-            var paymentsFile=await objectStoreService.GetObjectAsync(paymentInputBucketName, paymentRequest.PaymentsFileGUID);
+            var paymentsFile=await objectStoreService.GetObjectAsync(paymentInputBucketName, Path.Join(paymentRequest.PaymentsFileGUID+".json"));
             await paymentService.ProcessPaymentsAsync(paymentsFile);           
             paymentRequest.Status=PaymentRequestDTO.StatusEnum.SENT_TO_EXTERNAL_PP;
             await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 using OM.AWS.Demo.SL;
@@ -14,7 +15,7 @@ namespace OM.AWS.Demo.S3
 
 
         public AmazonS3Service() {
-            s3Client=new AmazonS3Client();
+            s3Client=new AmazonS3Client(RegionEndpoint.EUNorth1);
         }
 
         public async Task<string> GetObjectAsyncAsString(string objectStoreName, string objectName)
