@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OM.AWS.Demo.BL;
+using OM.AWS.Demo.ParameterStore;
 using OM.AWS.Demo.ProPay;
 using OM.AWS.Demo.S3;
 using OM.AWS.Demo.SecretsManager;
@@ -14,7 +15,9 @@ namespace OM.AWS.Demo.Config
             var sc=new ServiceCollection();
             sc.AddSingleton<IPaymentService, ProPayService>();
             sc.AddSingleton<IObjectStoreService, AmazonS3Service>();
+            sc.AddSingleton<IDatabaseService, AmazonDynamoDBService>();
             sc.AddSingleton<ISecretsService, AWSSecretsManagerService>();
+            sc.AddSingleton<ISettingsService, AWSParameterStoreService>();
             sc.AddSingleton<ICryptoService, PGPCryptoService>();
             sc.AddSingleton<PaymentBO, PaymentBO>();
             return sc.BuildServiceProvider();

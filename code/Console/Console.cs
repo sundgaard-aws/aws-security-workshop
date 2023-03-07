@@ -10,8 +10,12 @@ var serviceProvider=AppConfig.Wireup();
 
 var paymentService=serviceProvider.GetService<IPaymentService>();
 if(paymentService==null) throw new Exception("Please make sure that IPaymentService is initialized!");
+var settingService=serviceProvider.GetService<ISettingsService>();
+if(settingService==null) throw new Exception("Please make sure that ISettingsService is initialized!");
 var objectStore=serviceProvider.GetService<IObjectStoreService>();
 if(objectStore==null) throw new Exception("Please make sure that IObjectStoreService is initialized!");
+var databaseService=serviceProvider.GetService<IDatabaseService>();
+if(databaseService==null) throw new Exception("Please make sure that IDatabaseService is initialized!");
 var secretsService=serviceProvider.GetService<ISecretsService>();
 if(secretsService==null) throw new Exception("Please make sure that ISecretsService is initialized!");
 var paymentBO=serviceProvider.GetService<PaymentBO>();

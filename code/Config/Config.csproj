@@ -9,7 +9,6 @@
     <ProjectReference Include="..\SL\SL.csproj"/>
     <ProjectReference Include="..\DTL\DTL.csproj"/>
     <ProjectReference Include="..\ProPay\ProPay.csproj"/>
-    <ProjectReference Include="..\ShipFast\ShipFast.csproj"/>
     <ProjectReference Include="..\AmazonS3\AmazonS3.csproj"/>
     <ProjectReference Include="..\PGPCrypto\PGPCrypto.csproj"/>
     <ProjectReference Include="..\AWSSecretsManager\AWSSecretsManager.csproj"/>
