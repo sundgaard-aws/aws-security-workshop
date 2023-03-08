@@ -6,6 +6,10 @@ import { IVpc, SubnetType } from '@aws-cdk/aws-ec2/lib/vpc';
 import { ISecurityGroup, SecurityGroup } from '@aws-cdk/aws-ec2/lib/security-group';
 import { Effect, IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IKey, Key } from '@aws-cdk/aws-kms';
+import { SSMHelper } from './ssm-helper';
+import * as SSM from '@aws-cdk/aws-ssm';
+import { Secret } from '@aws-cdk/aws-secretsmanager';
+import { RemovalPolicy, RemoveTag } from '@aws-cdk/core';
 
 export class NetworkStack extends Core.Stack {
     public Vpc:EC2.IVpc;    
@@ -13,16 +17,32 @@ export class NetworkStack extends Core.Stack {
     public cmk:IKey;
     public ApiSecurityGroup: ISecurityGroup;
     public ApiRole:IRole;
+    private ssmHelper = new SSMHelper();
+    private SecretsManagerVPCEndpointSG: EC2.ISecurityGroup;
 
     constructor(scope: Core.Construct, id: string, props?: Core.StackProps) {
         super(scope, id, props);
         this.Vpc = this.createVPC();
         this.SSMVPCEndpointSG=this.createSSMVPCEndpointSecurityGroup();
+        this.SecretsManagerVPCEndpointSG=this.createSecretsManagerVPCEndpointSecurityGroup();
         this.createEndpoints(this.Vpc);
         this.cmk=this.createCustomerManagedKey();
         this.ApiSecurityGroup = this.createAPISecurityGroup(this.Vpc);
         this.SSMVPCEndpointSG.addIngressRule(this.ApiSecurityGroup, Port.allTraffic(), "Allow APIs to call SSM");
         this.ApiRole = this.buildAPIRole();
+        this.createCryptoSecret();
+    }
+
+    private createCryptoSecret() {
+        var secretName=MetaData.PREFIX+"crypto-secret";
+        const templatedSecret = new Secret(this, secretName, {
+            generateSecretString: {
+              secretStringTemplate: JSON.stringify({ userName: "<replace>", passPhrase:"<replace>" }),
+              generateStringKey: 'passPhrase',
+            },
+          });
+        var ssmParam=this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"CryptoSecretName", secretName, SSM.ParameterType.STRING);
+        ssmParam.grantRead(this.ApiRole);
     }
     
     private createEndpoints(vpc: EC2.IVpc) {
@@ -38,13 +58,19 @@ export class NetworkStack extends Core.Stack {
                  { subnetType: EC2.SubnetType.PRIVATE_ISOLATED }, { subnetType: EC2.SubnetType.PUBLIC }
             ]
         });
-
         vpc.addInterfaceEndpoint(MetaData.PREFIX+"ssm-ep", {
 
             service: InterfaceVpcEndpointAwsService.SSM,
             subnets: vpc.selectSubnets({subnetType:SubnetType.PRIVATE_ISOLATED}),
             securityGroups: [this.SSMVPCEndpointSG]
         });
+        vpc.addInterfaceEndpoint(MetaData.PREFIX+"sm-ep", {
+
+            service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+            subnets: vpc.selectSubnets({subnetType:SubnetType.PRIVATE_ISOLATED}),
+            securityGroups: [this.SecretsManagerVPCEndpointSG]
+        });
+
     }
 
     private createCustomerManagedKey(): IKey {
@@ -104,6 +130,18 @@ export class NetworkStack extends Core.Stack {
             vpc: this.Vpc
         });
         return sg;
+    }
+
+    private createSecretsManagerVPCEndpointSecurityGroup(): ISecurityGroup {
+        var sg=new SecurityGroup(this, MetaData.PREFIX+"sm-vpce-sg", {
+            securityGroupName: MetaData.PREFIX+"sm-vpce-sg",
+            disableInlineRules: false,
+            allowAllOutbound: true,
+            description: "Secrets Manager VPC Endpoint Security Group",
+            vpc: this.Vpc
+        });
+        sg.applyRemovalPolicy(RemovalPolicy.DESTROY);
+        return sg;        
     }
     
     private createVPC():EC2.IVpc {

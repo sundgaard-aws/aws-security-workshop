@@ -26,9 +26,9 @@ namespace OM.AWS.Demo.API {
         }
 
         [LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
-        public async Task<Object> Invoke() {
+        public async Task<Object> Invoke(string paymentsFileGUID, ILambdaContext context) {
             var paymentDate=new DateTime(2023, 3, 1);
-            await paymentBO.CreatePaymentRequestAsync(new DTL.PaymentRequestDTO{PaymentDate=paymentDate,PaymentsFileGUID=Guid.NewGuid().ToString()});
+            await paymentBO.CreatePaymentRequestAsync(new DTL.PaymentRequestDTO{PaymentDate=paymentDate,PaymentsFileGUID=paymentsFileGUID});
             return new { Status="Success", Code=200 };
         }   
     }

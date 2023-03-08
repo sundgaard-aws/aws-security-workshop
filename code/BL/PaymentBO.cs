@@ -14,13 +14,17 @@ namespace OM.AWS.Demo.BL
         private IDatabaseService databaseService;
         private ISettingsService settingsService;
         private IAppContextService appContextService;
+        private ICryptoService cryptoService;
+        private ISecretsService secretsService;
 
-        public PaymentBO(IAppContextService appContextService, IObjectStoreService objectStoreService, ISettingsService settingsService, IDatabaseService databaseService, IPaymentService paymentService) {
+        public PaymentBO(IAppContextService appContextService, IObjectStoreService objectStoreService, ISettingsService settingsService, IDatabaseService databaseService, IPaymentService paymentService, ICryptoService cryptoService, ISecretsService secretsService) {
             this.paymentService=paymentService;
             this.objectStoreService=objectStoreService;
             this.databaseService=databaseService;
             this.settingsService=settingsService;
             this.appContextService=appContextService;
+            this.cryptoService=cryptoService;
+            this.secretsService=secretsService;
         }
 
         public async Task CreatePaymentRequestAsync(PaymentRequestDTO paymentRequest)
@@ -35,6 +39,9 @@ namespace OM.AWS.Demo.BL
             await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);
             Console.WriteLine("Step3...");
             var paymentsFile=await objectStoreService.GetObjectAsync(paymentInputBucketName, Path.Join(paymentRequest.PaymentsFileGUID+".json"));
+            var cryptoSecretName=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"CryptoSecretName");     
+            var cryptoSecret=await secretsService.RestoreSecret<CryptoSecretDTO>(cryptoSecretName);     
+            cryptoService.LazyInit(cryptoSecret.UserName, cryptoSecret.PassPhrase);
             await paymentService.SendToPaymentProviderAsync(paymentsFile);           
             Console.WriteLine("Step4...");
             paymentRequest.Status=PaymentRequestDTO.StatusEnum.SENT_TO_EXTERNAL_PP;

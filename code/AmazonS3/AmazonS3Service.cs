@@ -30,6 +30,7 @@ namespace OM.AWS.Demo.S3
 
         public async Task<FileInfo> GetObjectAsync(string objectStoreName, string objectName)
         {
+            Console.WriteLine($"Looking for object with key {objectName} in bucket {objectStoreName}");
             var getObjectRequest=new GetObjectRequest{
                 BucketName=objectStoreName,
                 Key=objectName
