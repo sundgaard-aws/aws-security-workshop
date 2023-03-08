@@ -171,12 +171,13 @@ export class DataStack extends Core.Stack {
     
     private createPaymentRequestTable() {
         var name = MetaData.PREFIX+"pay-req-tab";
-        new Table(this, name, {
+        var table=new Table(this, name, {
             tableName: name,
             billingMode: BillingMode.PAY_PER_REQUEST,
             partitionKey: {name: "PaymentDate", type: AttributeType.STRING},
             sortKey: {name: "PaymentsFileGUID", type: AttributeType.STRING}
         });
+        table.grantReadWriteData(this.apiRole);
     }
 
     private createPaymentRequestSQSQueue():{queue:IQueue,dlq:IQueue}
