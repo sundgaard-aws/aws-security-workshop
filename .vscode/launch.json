@@ -21,6 +21,17 @@
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
-        }
+        },
+        {
+            "name": "Launch ProPayRequestHandler",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "buildProPayRequestHandler",
+            "program": "${workspaceFolder}/code/ProPayRequestHandler/bin/Debug/net6.0/ProPayRequestHandler.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/code/ProPayRequestHandler",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },        
     ]
 }

@@ -14,6 +14,7 @@ import { SSMHelper } from './ssm-helper';
 
 export interface DataStackProps extends StackProps {
     key: IKey;
+    enableGrants: boolean;
     //sqsRequestEventTarget: IQueue;
     //sqsResponseEventTarget: IQueue;
 }
@@ -134,7 +135,8 @@ export class DataStack extends Core.Stack {
             removalPolicy: RemovalPolicy.DESTROY
         });
         bucket.grantReadWrite(this.apiRole);
-        this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentInputBucketName", name, SSM.ParameterType.STRING);
+        var ssmParam=this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentInputBucketName", name, SSM.ParameterType.STRING);
+        ssmParam.grantRead(this.apiRole);
         //bucket.addEventNotification(EventType.OBJECT_CREATED, new SqsDestination(this.props.sqsRequestEventTarget));
         Core.Tags.of(bucket).add(MetaData.NAME, name);
         return bucket;

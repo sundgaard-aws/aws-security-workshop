@@ -1,4 +1,4 @@
-$functionName = "sec-ws-SendExternalPaymentRequestFunction"
+$functionName = "sec-ws-ProPayResponseFunction"
 clear
 echo Publishing function...
 dotnet publish

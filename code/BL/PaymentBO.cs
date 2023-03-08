@@ -25,16 +25,18 @@ namespace OM.AWS.Demo.BL
 
         public async Task CreatePaymentRequestAsync(PaymentRequestDTO paymentRequest)
         {
-            Console.WriteLine("Started CreatePaymentRequestAsync...");
-            
+            Console.WriteLine("Started CreatePaymentRequestAsync...");            
             if(String.IsNullOrEmpty(paymentRequest.PaymentsFileGUID)) throw new Exception("Please ensure that PaymentsFileGUID is valid!");
             if(paymentRequest.PaymentDate==null) throw new Exception("Please ensure that PaymentDate is valid!");
-            
+            Console.WriteLine("Step1...");
             var paymentInputBucketName=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"PaymentInputBucketName");     
-            paymentRequest.Status=PaymentRequestDTO.StatusEnum.CREATED;       
+            Console.WriteLine("Step2...");
+            paymentRequest.Status=PaymentRequestDTO.StatusEnum.CREATED;
             await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);
+            Console.WriteLine("Step3...");
             var paymentsFile=await objectStoreService.GetObjectAsync(paymentInputBucketName, Path.Join(paymentRequest.PaymentsFileGUID+".json"));
-            await paymentService.ProcessPaymentsAsync(paymentsFile);           
+            await paymentService.SendToPaymentProviderAsync(paymentsFile);           
+            Console.WriteLine("Step4...");
             paymentRequest.Status=PaymentRequestDTO.StatusEnum.SENT_TO_EXTERNAL_PP;
             await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);
             //paymentRequest.Status=PaymentRequestDTO.StatusEnum.CONFIRMED;

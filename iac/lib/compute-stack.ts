@@ -21,14 +21,15 @@ export class ComputeStack extends Core.Stack {
         //this.createArchivePaymentRequestFunction(apiSecurityGroup, vpc);
         this.createSendExternalPaymentRequestFunction(apiSecurityGroup, vpc);
         this.createReceiveExternalPaymentResponseFunction(apiSecurityGroup, vpc);
-        this.createProPayMockFunction(apiSecurityGroup, vpc);
+        this.createProPayRequestFunction(apiSecurityGroup, vpc);
+        this.createProPayResponseFunction(apiSecurityGroup, vpc);
     }
 
     private createLambdaFunction(apiSecurityGroup: ISecurityGroup, name:string, handlerMethod:string, assetPath:string, vpc:EC2.IVpc):Lambda.Function {
         var codeFromLocalZip = Lambda.Code.fromAsset(assetPath);
         var lambdaFunction = new Lambda.Function(this, MetaData.PREFIX+name, { 
             functionName: MetaData.PREFIX+name, vpc: vpc, code: codeFromLocalZip, handler: handlerMethod, runtime: this.runtime, memorySize: 256, 
-            timeout: Core.Duration.seconds(20), role: this.apiRole, securityGroups: [apiSecurityGroup],
+            timeout: Core.Duration.seconds(5), role: this.apiRole, securityGroups: [apiSecurityGroup],
             tracing: Lambda.Tracing.ACTIVE,
             environmentEncryption: this.cmk
         });
@@ -46,8 +47,12 @@ export class ComputeStack extends Core.Stack {
         return lambdaFunction;
     } 
 
-    private createProPayMockFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {
-        return this.createLambdaFunction(apiSecurityGroup, "ProPayMockFunction", "ProPayHandler::OM.AWS.Demo.API.FunctionHandler::Invoke", "../code/ProPayHandler/publish/", vpc);
+    private createProPayRequestFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {
+        return this.createLambdaFunction(apiSecurityGroup, "ProPayRequestFunction", "ProPayRequestHandler::OM.AWS.Demo.API.FunctionHandler::Invoke", "../code/ProPayRequestHandler/publish/", vpc);
+    }
+
+    private createProPayResponseFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {
+        return this.createLambdaFunction(apiSecurityGroup, "ProPayResponseFunction", "ProPayResponseHandler::OM.AWS.Demo.API.FunctionHandler::Invoke", "../code/ProPayResponseHandler/publish/", vpc);
     }
 
     private createSendExternalPaymentRequestFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {

@@ -17,6 +17,7 @@
     <ItemGroup>    
       <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0"/>
       <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.0"/>
+      <PackageReference Include="Amazon.Lambda.Annotations" Version="0.13.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0"/>
       <ProjectReference Include="..\DTL\DTL.csproj"/>
       <ProjectReference Include="..\SL\SL.csproj"/>
@@ -24,7 +25,6 @@
       <ProjectReference Include="..\AmazonS3\AmazonS3.csproj"/>
       <ProjectReference Include="..\AWSSecretsManager\AWSSecretsManager.csproj"/>
       <ProjectReference Include="..\ProPay\ProPay.csproj"/>
-      <ProjectReference Include="..\ShipFast\ShipFast.csproj"/>
       <ProjectReference Include="..\Config\Config.csproj"/>
     </ItemGroup>
   </Project>

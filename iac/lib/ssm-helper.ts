@@ -7,14 +7,15 @@ export class SSMHelper {
     constructor() {
     }
 
-    public createSSMParameter(stack: Core.Construct, parameterName: string, parameterValue: string, parameterType: SSM.ParameterType) {
-        new SSM.StringParameter(stack, parameterName, {
+    public createSSMParameter(stack: Core.Construct, parameterName: string, parameterValue: string, parameterType: SSM.ParameterType): SSM.IParameter {
+        var param=new SSM.StringParameter(stack, parameterName, {
             description: parameterName,
             parameterName: parameterName,
             stringValue: parameterValue,
             type: parameterType
             // allowedPattern: '.*',
         });
+        return param;
     }
     
     public createSecureSSMParameter(stack: Core.Construct, parameterName: string, parameterValue: string, parameterType: SSM.ParameterType) {
