@@ -47,10 +47,16 @@ namespace PGPCrypto
         public async Task<CryptoMaterialDTO> GenerateKeyPairAsync() {
             var pgpPublicKeyStream=new MemoryStream();
             var pgpPrivateKeyStream=new MemoryStream();
-            PGP.Instance.GenerateKey(pgpPublicKeyStream,pgpPrivateKeyStream,this.userName,this.passPhrase);            
+            PGP.Instance.GenerateKey(pgpPublicKeyStream,pgpPrivateKeyStream,this.userName,this.passPhrase);
+            pgpPublicKeyStream.Seek(0,0);
+            pgpPrivateKeyStream.Seek(0,0);
+            var publicKeyMaterial=await new StreamReader(pgpPublicKeyStream).ReadToEndAsync();
+            var privateKeyMaterial=await new StreamReader(pgpPrivateKeyStream).ReadToEndAsync();
+            //Console.WriteLine($"publicKeyMaterial {publicKeyMaterial}");
+            //Console.WriteLine($"privateKeyMaterial {privateKeyMaterial}");
             var keyMaterial=new CryptoMaterialDTO {
-                PublicKey=pgpPublicKeyStream.GetString(),
-                PrivateKey=pgpPrivateKeyStream.GetString()
+                PublicKey=publicKeyMaterial,
+                PrivateKey=privateKeyMaterial
             };
             var cryptoMaterialSecretName=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"CryptoMaterialSecretName");
             Console.WriteLine($"Updating key material in secret...");

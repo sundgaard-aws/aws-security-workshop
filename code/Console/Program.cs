@@ -29,6 +29,8 @@ public class Program {
     var paymentBO=serviceProvider.GetService<PaymentBO>();
     if(paymentBO==null) throw new Exception("Please make sure that PaymentBO is initialized!");
 
+
+
     cryptoService.LazyInit("demo@mydomain.com", "12345678ABCdef");
     await cryptoService.GenerateKeyPairAsync();
 
