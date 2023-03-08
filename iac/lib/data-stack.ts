@@ -14,7 +14,6 @@ import { SSMHelper } from './ssm-helper';
 
 export interface DataStackProps extends StackProps {
     key: IKey;
-    enableGrants: boolean;
     //sqsRequestEventTarget: IQueue;
     //sqsResponseEventTarget: IQueue;
 }
@@ -48,33 +47,6 @@ export class DataStack extends Core.Stack {
     }
 
     private addExtraPermissions(key:IKey) {
-        // QUEUE Policy
-        /*
-        {
-            "Version": "2012-10-17",
-            "Id": "example-ID",
-            "Statement": [
-                {
-                    "Sid": "example-statement-ID",
-                    "Effect": "Allow",
-                    "Principal": {
-                        "Service": "s3.amazonaws.com"
-                    },
-                    "Action": [
-                        "SQS:SendMessage"
-                    ],
-                    "Resource": "arn:aws:sqs:Region:account-id:queue-name",
-                    "Condition": {
-                        "ArnLike": {
-                            "aws:SourceArn": "arn:aws:s3:*:*:awsexamplebucket1"
-                        },
-                        "StringEquals": {
-                            "aws:SourceAccount": "bucket-owner-account-id"
-                        }
-                    }
-                }
-            ]
-        }*/
         this.PaymentRequestQueue.queue.addToResourcePolicy(new PolicyStatement({
             effect: Effect.ALLOW,
             principals: [new ServicePrincipal('s3.amazonaws.com')],
@@ -100,31 +72,12 @@ export class DataStack extends Core.Stack {
             resources: [this.PaymentResponseQueue.dlq.queueArn]
         })); 
 
-        // KEY POLICY
-        /*{
-            "Version": "2012-10-17",
-            "Id": "example-ID",
-            "Statement": [
-                {
-                    "Sid": "example-statement-ID",
-                    "Effect": "Allow",
-                    "Principal": {
-                        "Service": "s3.amazonaws.com"
-                    },
-                    "Action": [
-                        "kms:GenerateDataKey",
-                        "kms:Decrypt"
-                    ],
-                    "Resource": "*"
-                }
-            ]
-        }*/
         key.addToResourcePolicy(new PolicyStatement({
             effect: Effect.ALLOW,
             principals: [new ServicePrincipal('s3.amazonaws.com'), new ServicePrincipal('sqs.amazonaws.com')],
             actions: ["kms:GenerateDataKey","kms:Decrypt"],
             resources: ["*"]
-        }));        
+        }));                
     }
 
     private createPaymentInputBucket():IBucket {

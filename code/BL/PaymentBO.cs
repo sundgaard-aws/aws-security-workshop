@@ -40,7 +40,9 @@ namespace OM.AWS.Demo.BL
             Console.WriteLine("Step3...");
             var paymentsFile=await objectStoreService.GetObjectAsync(paymentInputBucketName, Path.Join(paymentRequest.PaymentsFileGUID+".json"));
             var cryptoSecretName=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"CryptoSecretName");     
-            var cryptoSecret=await secretsService.RestoreSecret<CryptoSecretDTO>(cryptoSecretName);     
+            var cryptoSecret=await secretsService.RestoreSecret<CryptoSecretDTO>(cryptoSecretName);
+            Console.WriteLine($"Found user name {cryptoSecret.UserName}");
+            Console.WriteLine($"Found pass phrase {cryptoSecret.PassPhrase}");
             cryptoService.LazyInit(cryptoSecret.UserName, cryptoSecret.PassPhrase);
             await paymentService.SendToPaymentProviderAsync(paymentsFile);           
             Console.WriteLine("Step4...");

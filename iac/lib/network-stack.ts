@@ -27,22 +27,39 @@ export class NetworkStack extends Core.Stack {
         this.SecretsManagerVPCEndpointSG=this.createSecretsManagerVPCEndpointSecurityGroup();
         this.createEndpoints(this.Vpc);
         this.cmk=this.createCustomerManagedKey();
+        //this.cmk.grantEncryptDecrypt(new ServicePrincipal('s3.amazonaws.com'));
+        //this.cmk.grantEncryptDecrypt(new ServicePrincipal('sqs.amazonaws.com'));
         this.ApiSecurityGroup = this.createAPISecurityGroup(this.Vpc);
         this.SSMVPCEndpointSG.addIngressRule(this.ApiSecurityGroup, Port.allTraffic(), "Allow APIs to call SSM");
         this.ApiRole = this.buildAPIRole();
-        this.createCryptoSecret();
+        this.createCryptoSecrets();
     }
 
-    private createCryptoSecret() {
+    private createCryptoSecrets() {
         var secretName=MetaData.PREFIX+"crypto-secret";
-        const templatedSecret = new Secret(this, secretName, {
+        const cryptoContextSecret = new Secret(this, secretName, {
             generateSecretString: {
-              secretStringTemplate: JSON.stringify({ userName: "<replace>", passPhrase:"<replace>" }),
-              generateStringKey: 'passPhrase',
+              secretStringTemplate: JSON.stringify({ UserName: "<replace>", PassPhrase:"<replace>" }),
+              generateStringKey: "PassPhrase"
             },
+            secretName:secretName
           });
         var ssmParam=this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"CryptoSecretName", secretName, SSM.ParameterType.STRING);
         ssmParam.grantRead(this.ApiRole);
+        cryptoContextSecret.grantRead(this.ApiRole);
+
+        var materialSecretName=MetaData.PREFIX+"crypto-mat-secret";
+        const cryptoKeyMaterialSecret = new Secret(this, materialSecretName, {
+            generateSecretString: {
+              secretStringTemplate: JSON.stringify({ PublicKey: "<replace>", PrivateKey:"<replace>" }),
+              generateStringKey: "PrivateKey"
+            },
+            secretName:materialSecretName
+          });
+        ssmParam=this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"CryptoMaterialSecretName", materialSecretName, SSM.ParameterType.STRING);
+        ssmParam.grantRead(this.ApiRole);
+        cryptoKeyMaterialSecret.grantRead(this.ApiRole);
+        cryptoKeyMaterialSecret.grantWrite(this.ApiRole);
     }
     
     private createEndpoints(vpc: EC2.IVpc) {

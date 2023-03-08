@@ -8,7 +8,7 @@ namespace OM.AWS.Demo.SL {
     {
         Task<string> EncryptAsync(string data);
         Task<FileInfo> EncryptAsync(FileInfo dataFile);
-        Task<KeyPairDTO> GenerateKeyPairAsync();
+        Task<CryptoMaterialDTO> GenerateKeyPairAsync();
         void LazyInit(string userName, string passPhrase);
     }
 }

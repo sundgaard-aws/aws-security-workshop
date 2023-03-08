@@ -14,9 +14,13 @@ namespace OM.AWS.Demo.ProPay
     public class ProPayService : IPaymentService
     {
         private ICryptoService cryptoService;
+        private ISettingsService settingsService;
+        private IAppContextService appContextService;
 
-        public ProPayService(ICryptoService cryptoService) {
+        public ProPayService(ICryptoService cryptoService, ISettingsService settingsService, IAppContextService appContextService) {
             this.cryptoService=cryptoService;
+            this.settingsService=settingsService;
+            this.appContextService=appContextService;
         }
 
         public async Task ProcessPaymentsAsync(List<PaymentDTO> payments)
@@ -45,6 +49,7 @@ namespace OM.AWS.Demo.ProPay
             Console.WriteLine("ProcessPaymentsAsync started...");
             var encryptedFile=await cryptoService.EncryptAsync(paymentsFile);
             var encryptedContent=File.ReadAllBytes(encryptedFile.FullName);
+            var proPayRequestAPIURL=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"ProPayRequestAPIURL");     
             var uri="http://";
             var httpContent = new ByteArrayContent(encryptedContent);
             var httpClient=new HttpClient();

@@ -23,13 +23,14 @@ export class ComputeStack extends Core.Stack {
         this.createReceiveExternalPaymentResponseFunction(apiSecurityGroup, vpc);
         this.createProPayRequestFunction(apiSecurityGroup, vpc);
         this.createProPayResponseFunction(apiSecurityGroup, vpc);
+        this.createProPayGenerateKeyPairFunction(apiSecurityGroup, vpc);
     }
 
     private createLambdaFunction(apiSecurityGroup: ISecurityGroup, name:string, handlerMethod:string, assetPath:string, vpc:EC2.IVpc):Lambda.Function {
         var codeFromLocalZip = Lambda.Code.fromAsset(assetPath);
         var lambdaFunction = new Lambda.Function(this, MetaData.PREFIX+name, { 
             functionName: MetaData.PREFIX+name, vpc: vpc, code: codeFromLocalZip, handler: handlerMethod, runtime: this.runtime, memorySize: 256, 
-            timeout: Core.Duration.seconds(5), role: this.apiRole, securityGroups: [apiSecurityGroup],
+            timeout: Core.Duration.seconds(10), role: this.apiRole, securityGroups: [apiSecurityGroup],
             tracing: Lambda.Tracing.ACTIVE,
             environmentEncryption: this.cmk
         });
@@ -46,6 +47,10 @@ export class ComputeStack extends Core.Stack {
         Core.Tags.of(lambdaFunction).add(MetaData.NAME, MetaData.PREFIX+name);
         return lambdaFunction;
     } 
+    
+    private createProPayGenerateKeyPairFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {
+        return this.createLambdaFunction(apiSecurityGroup, "ProPayGenerateKeyPairFunction", "ProPayGenerateKeyPairHandler::OM.AWS.Demo.API.FunctionHandler::Invoke", "../code/ProPayGenerateKeyPairHandler/publish/", vpc);
+    }
 
     private createProPayRequestFunction(apiSecurityGroup: ISecurityGroup, vpc: IVpc):Lambda.Function {
         return this.createLambdaFunction(apiSecurityGroup, "ProPayRequestFunction", "ProPayRequestHandler::OM.AWS.Demo.API.FunctionHandler::Invoke", "../code/ProPayRequestHandler/publish/", vpc);
