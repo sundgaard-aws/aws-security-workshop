@@ -9,8 +9,10 @@ import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
 import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import { IKey } from '@aws-cdk/aws-kms';
 import IAM = require("@aws-cdk/aws-iam");
+import * as SSM from '@aws-cdk/aws-ssm';
 
 export class ComputeStack extends Core.Stack {
+    private ssmHelper = new SSMHelper();
     private runtime:Lambda.Runtime = Lambda.Runtime.DOTNET_6;
     private cmk:IKey;
     private apiRole:IAM.IRole;
@@ -42,7 +44,8 @@ export class ComputeStack extends Core.Stack {
         path: "/" + name,
         methods: [ HttpMethod.POST, HttpMethod.OPTIONS ],
         integration: lambdaIntegration,
-        });
+        });        
+        if(httpApi.url) this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+name+"URL", httpApi.url, SSM.ParameterType.STRING);
         
         Core.Tags.of(lambdaFunction).add(MetaData.NAME, MetaData.PREFIX+name);
         return lambdaFunction;

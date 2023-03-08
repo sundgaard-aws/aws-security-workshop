@@ -26,9 +26,9 @@ export class NetworkStack extends Core.Stack {
         this.SSMVPCEndpointSG=this.createSSMVPCEndpointSecurityGroup();
         this.SecretsManagerVPCEndpointSG=this.createSecretsManagerVPCEndpointSecurityGroup();
         this.createEndpoints(this.Vpc);
-        this.cmk=this.createCustomerManagedKey();
-        //this.cmk.grantEncryptDecrypt(new ServicePrincipal('s3.amazonaws.com'));
-        //this.cmk.grantEncryptDecrypt(new ServicePrincipal('sqs.amazonaws.com'));
+        this.cmk=this.createCustomerManagedKey();        
+        //if(MetaData.EnableGrants) this.cmk.grantEncryptDecrypt(new ServicePrincipal('s3.amazonaws.com'));
+        //if(MetaData.EnableGrants) this.cmk.grantEncryptDecrypt(new ServicePrincipal('sqs.amazonaws.com'));
         this.ApiSecurityGroup = this.createAPISecurityGroup(this.Vpc);
         this.SSMVPCEndpointSG.addIngressRule(this.ApiSecurityGroup, Port.allTraffic(), "Allow APIs to call SSM");
         this.ApiRole = this.buildAPIRole();

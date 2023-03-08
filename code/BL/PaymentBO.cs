@@ -44,7 +44,8 @@ namespace OM.AWS.Demo.BL
             Console.WriteLine($"Found user name {cryptoSecret.UserName}");
             Console.WriteLine($"Found pass phrase {cryptoSecret.PassPhrase}");
             cryptoService.LazyInit(cryptoSecret.UserName, cryptoSecret.PassPhrase);
-            await paymentService.SendToPaymentProviderAsync(paymentsFile);           
+            var paymentsData=File.ReadAllText(paymentsFile.FullName);
+            await paymentService.SendToPaymentProviderAsync(paymentsData);           
             Console.WriteLine("Step4...");
             paymentRequest.Status=PaymentRequestDTO.StatusEnum.SENT_TO_EXTERNAL_PP;
             await databaseService.SaveAsync<PaymentRequestDTO>(paymentRequest);

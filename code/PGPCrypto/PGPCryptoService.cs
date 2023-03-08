@@ -81,7 +81,10 @@ namespace PGPCrypto
             using (PGP pgp = new PGP(await GetEncryptionKeys()))
             {                
                 Console.WriteLine(@$"Encrypting file via PGP {TempPath}...");
-                var encryptedFile=new FileInfo(Path.Join(TempPath,"content__encrypted.pgp"));
+                var encryptedFilePath=Path.Join(TempPath,"content__encrypted.pgp");
+                Directory.CreateDirectory(encryptedFilePath);
+                var encryptedFile=new FileInfo(encryptedFilePath);
+                
                 pgp.EncryptFile(dataFile, encryptedFile);
                 Console.WriteLine(@$"Done encrypting file. File is in {TempPath}.");
                 return encryptedFile;
@@ -97,7 +100,9 @@ namespace PGPCrypto
                 var encryptedMemStream=new MemoryStream();
                 pgp.EncryptStream(dataMemStream, encryptedMemStream);
                 Console.WriteLine(@$"Done encrypting data.");
-                return await encryptedMemStream.GetStringAsync();
+                encryptedMemStream.Seek(0,0);
+                var buffer=encryptedMemStream.GetBuffer();
+                return Convert.ToBase64String(buffer);
             }
         }        
 

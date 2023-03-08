@@ -44,17 +44,16 @@ namespace OM.AWS.Demo.ProPay
             Console.WriteLine("ProcessPaymentsAsync ended.");
         }
 
-        public async Task<string> SendToPaymentProviderAsync(FileInfo paymentsFile)
+        public async Task<string> SendToPaymentProviderAsync(string paymentsData)
         {
             Console.WriteLine("ProcessPaymentsAsync started...");
-            var encryptedFile=await cryptoService.EncryptAsync(paymentsFile);
-            var encryptedContent=File.ReadAllBytes(encryptedFile.FullName);
-            var proPayRequestAPIURL=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"ProPayRequestAPIURL");     
-            var uri="http://";
-            var httpContent = new ByteArrayContent(encryptedContent);
+            var encryptedPaymentsData=await cryptoService.EncryptAsync(paymentsData);
+            //var encryptedContent=File.ReadAllBytes(encryptedFile.FullName);
+            var proPayRequestFunctionURL=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"ProPayRequestFunctionURL");     
+            var httpContent = new StringContent(encryptedPaymentsData);
             var httpClient=new HttpClient();
             httpClient.Timeout=TimeSpan.FromSeconds(3);
-            var resp=await httpClient.PostAsync(uri, httpContent);
+            var resp=await httpClient.PostAsync(proPayRequestFunctionURL, httpContent);
             await resp.Content.ReadAsStringAsync();
             var paymentReceiptGUID=resp.Content.Headers.GetValues("paymentReceiptGUID").SingleOrDefault();
             if(String.IsNullOrEmpty(paymentReceiptGUID)) throw new Exception("The payment receipt GUID from ProPay API was null, failed!");
