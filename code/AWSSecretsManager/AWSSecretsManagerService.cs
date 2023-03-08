@@ -19,6 +19,8 @@ namespace OM.AWS.Demo.SecretsManager
             if(String.IsNullOrEmpty(region)) region=RegionEndpoint.EUNorth1.SystemName;
             Console.WriteLine($"AWSRegion={region}");
             //var region = Regions.getCurrentRegion();
+            //AmazonSecretsManagerConfig  config = new AmazonSecretsManagerConfig { ServiceURL = "https://vpce-098lnz0211f9f045g-madxscbm.secretsmanager.eu-west-1.vpce.amazonaws.com" };
+            //AmazonSecretsManagerClient client = new AmazonSecretsManagerClient(accessid, secretkey, config);
             this.client = new AmazonSecretsManagerClient(RegionEndpoint.GetBySystemName(region));
         }
 

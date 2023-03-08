@@ -1,15 +1,28 @@
 import * as Core from '@aws-cdk/core';
 import EC2 = require('@aws-cdk/aws-ec2');
 import { MetaData } from './meta-data';
+import { InterfaceVpcEndpointAwsService, Port, VpcEndpointService } from '@aws-cdk/aws-ec2';
+import { IVpc, SubnetType } from '@aws-cdk/aws-ec2/lib/vpc';
+import { ISecurityGroup, SecurityGroup } from '@aws-cdk/aws-ec2/lib/security-group';
+import { Effect, IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IKey, Key } from '@aws-cdk/aws-kms';
 
 export class NetworkStack extends Core.Stack {
     public Vpc:EC2.IVpc;    
+    public SSMVPCEndpointSG: ISecurityGroup;
+    public cmk:IKey;
+    public ApiSecurityGroup: ISecurityGroup;
+    public ApiRole:IRole;
 
     constructor(scope: Core.Construct, id: string, props?: Core.StackProps) {
         super(scope, id, props);
         this.Vpc = this.createVPC();
-        //this.createEndpoints(this.Vpc);
-        //this.createRDSSecurityGroup();        
+        this.SSMVPCEndpointSG=this.createSSMVPCEndpointSecurityGroup();
+        this.createEndpoints(this.Vpc);
+        this.cmk=this.createCustomerManagedKey();
+        this.ApiSecurityGroup = this.createAPISecurityGroup(this.Vpc);
+        this.SSMVPCEndpointSG.addIngressRule(this.ApiSecurityGroup, Port.allTraffic(), "Allow APIs to call SSM");
+        this.ApiRole = this.buildAPIRole();
     }
     
     private createEndpoints(vpc: EC2.IVpc) {
@@ -25,6 +38,72 @@ export class NetworkStack extends Core.Stack {
                  { subnetType: EC2.SubnetType.PRIVATE_ISOLATED }, { subnetType: EC2.SubnetType.PUBLIC }
             ]
         });
+
+        vpc.addInterfaceEndpoint(MetaData.PREFIX+"ssm-ep", {
+
+            service: InterfaceVpcEndpointAwsService.SSM,
+            subnets: vpc.selectSubnets({subnetType:SubnetType.PRIVATE_ISOLATED}),
+            securityGroups: [this.SSMVPCEndpointSG]
+        });
+    }
+
+    private createCustomerManagedKey(): IKey {
+        var name=MetaData.PREFIX+"key";
+        var key=new Key(this, name, {
+            description: name,
+            enabled: true            
+        });
+        Core.Tags.of(key).add(MetaData.NAME, name);
+        return key;
+    }
+
+    private createAPISecurityGroup(vpc: IVpc): ISecurityGroup {
+        var postFix = "api-sg";
+        var securityGroup = new SecurityGroup(this, MetaData.PREFIX+postFix, {
+            vpc: vpc,
+            securityGroupName: MetaData.PREFIX+postFix,
+            description: MetaData.PREFIX+postFix,
+            allowAllOutbound: true
+        });
+        
+        //securityGroup.connections.allowTo(this.metaData.RDSSecurityGroup, EC2.Port.tcp(3306), "Lambda to RDS");
+        Core.Tags.of(securityGroup).add(MetaData.NAME, MetaData.PREFIX+postFix);
+        //this.metaData.APISecurityGroup = securityGroup;
+        return securityGroup;
+    }
+
+    private buildAPIRole(): IRole {
+        var role = new Role(this, MetaData.PREFIX+"api-role", {
+            description: "Lambda API Role",
+            roleName: MetaData.PREFIX+"api-role",
+            assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
+            managedPolicies: [
+                ManagedPolicy.fromAwsManagedPolicyName("AWSStepFunctionsFullAccess"),
+                ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMFullAccess"),
+                ManagedPolicy.fromManagedPolicyArn(this, "AWSLambdaSQSQueueExecutionRole", "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"),
+                ManagedPolicy.fromManagedPolicyArn(this, "AWSLambdaBasicExecutionRole", "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"),
+                ManagedPolicy.fromManagedPolicyArn(this, "AWSLambdaVPCAccessExecutionRole", "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole")
+            ],
+        });
+        role.addToPolicy(new PolicyStatement({
+          effect: Effect.ALLOW,
+          resources: ["*"],
+          actions: ["secretsmanager:GetSecretValue","dbqms:*","rds-data:*","xray:*","dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:Scan","dynamodb:Query"]
+        }));
+
+        Core.Tags.of(role).add(MetaData.NAME, MetaData.PREFIX+"api-role");
+        return role;
+    }     
+
+    private createSSMVPCEndpointSecurityGroup(): ISecurityGroup {
+        var sg=new SecurityGroup(this, MetaData.PREFIX+"ssm-vpce-sg", {
+            securityGroupName: MetaData.PREFIX+"ssm-vpce-sg",
+            disableInlineRules: false,
+            allowAllOutbound: true,
+            description: "",
+            vpc: this.Vpc
+        });
+        return sg;
     }
     
     private createVPC():EC2.IVpc {
