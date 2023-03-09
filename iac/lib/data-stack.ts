@@ -102,7 +102,8 @@ export class DataStack extends Core.Stack {
             encryptionKey: this.keyAlias,
             removalPolicy: RemovalPolicy.DESTROY
         });
-        this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentRequestBucketName", name, SSM.ParameterType.STRING);
+        var ssmParam=this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentRequestBucketName", name, SSM.ParameterType.STRING);
+        ssmParam.grantRead(this.apiRole);
         bucket.grantReadWrite(this.apiRole);
         //bucket.addEventNotification(EventType.OBJECT_CREATED, new SqsDestination(this.props.sqsRequestEventTarget));
         Core.Tags.of(bucket).add(MetaData.NAME, name);
@@ -115,7 +116,8 @@ export class DataStack extends Core.Stack {
             bucketName: name, encryptionKey: this.keyAlias,
             removalPolicy: RemovalPolicy.DESTROY
         });
-        this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentResponseBucketName", name, SSM.ParameterType.STRING);
+        var ssmParam=this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentResponseBucketName", name, SSM.ParameterType.STRING);
+        ssmParam.grantRead(this.apiRole);
         bucket.grantReadWrite(this.apiRole);
         //bucket.addEventNotification(EventType.OBJECT_CREATED, new SqsDestination(this.props.sqsRequestEventTarget));
         Core.Tags.of(bucket).add(MetaData.NAME, name);
@@ -130,6 +132,8 @@ export class DataStack extends Core.Stack {
             partitionKey: {name: "PaymentDate", type: AttributeType.STRING},
             sortKey: {name: "PaymentsFileGUID", type: AttributeType.STRING}
         });
+        var ssmParam=this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+"PaymentRequestTableName", name, SSM.ParameterType.STRING);
+        ssmParam.grantRead(this.apiRole);
         table.grantReadWriteData(this.apiRole);
     }
 
