@@ -41,7 +41,7 @@ export class DataStack extends Core.Stack {
         this.PaymentInputBucket=this.createPaymentInputBucket();
         this.PaymentRequestBucket=this.createRequestBucket();
         this.PaymentResponseBucket=this.createResponseBucket();
-        this.addExtraPermissions(props.key);
+        if(MetaData.EnableGrants) this.addExtraPermissions(props.key);
         this.addEvents();
         //props.key.grantEncryptDecrypt(this.PaymentRequestBucket.bucketArn);        
     }
