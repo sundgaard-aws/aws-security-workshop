@@ -54,11 +54,13 @@ namespace OM.AWS.Demo.ProPay
             var httpClient=new HttpClient();
             httpClient.Timeout=TimeSpan.FromSeconds(3);
             var resp=await httpClient.PostAsync(proPayRequestFunctionURL, httpContent);
-            await resp.Content.ReadAsStringAsync();
-            var paymentReceiptGUID=resp.Content.Headers.GetValues("paymentReceiptGUID").SingleOrDefault();
-            if(String.IsNullOrEmpty(paymentReceiptGUID)) throw new Exception("The payment receipt GUID from ProPay API was null, failed!");
+            var proPayResponseJSON=await resp.Content.ReadAsStringAsync();
+            Console.WriteLine($"proPayResponseJSON {proPayResponseJSON}");
+            var proPayResponse=JsonSerializer.Deserialize<ProPayResponseDTO>(proPayResponseJSON);
+            //var paymentReceiptGUID=resp.Content.Headers.GetValues("paymentReceiptGUID").SingleOrDefault();
+            if(proPayResponse==null || String.IsNullOrEmpty(proPayResponse.TransactionID)) throw new Exception("The payment receipt GUID from ProPay API was null, failed!");
             Console.WriteLine("ProcessPaymentsAsync ended.");
-            return paymentReceiptGUID;
+            return proPayResponse.TransactionID;
         }
     }
 }

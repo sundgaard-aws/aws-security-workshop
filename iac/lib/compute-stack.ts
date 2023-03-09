@@ -45,7 +45,7 @@ export class ComputeStack extends Core.Stack {
         methods: [ HttpMethod.POST, HttpMethod.OPTIONS ],
         integration: lambdaIntegration,
         });        
-        if(httpApi.url) this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+name+"URL", httpApi.url, SSM.ParameterType.STRING);
+        if(httpApi.url) this.ssmHelper.createSSMParameter(this, MetaData.PREFIX+name+"URL", httpApi.url+name, SSM.ParameterType.STRING);
         
         Core.Tags.of(lambdaFunction).add(MetaData.NAME, MetaData.PREFIX+name);
         return lambdaFunction;

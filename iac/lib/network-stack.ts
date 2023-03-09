@@ -66,25 +66,25 @@ export class NetworkStack extends Core.Stack {
         vpc.addGatewayEndpoint(MetaData.PREFIX+"dyndb-ep", {
             service: EC2.GatewayVpcEndpointAwsService.DYNAMODB,
             subnets: [
-                 { subnetType: EC2.SubnetType.PRIVATE_ISOLATED }, { subnetType: EC2.SubnetType.PUBLIC }
+                 { subnetType: EC2.SubnetType.PRIVATE_WITH_NAT }, { subnetType: EC2.SubnetType.PUBLIC }
             ]
         });
         vpc.addGatewayEndpoint(MetaData.PREFIX+"s3-ep", {
             service: EC2.GatewayVpcEndpointAwsService.S3,
             subnets: [
-                 { subnetType: EC2.SubnetType.PRIVATE_ISOLATED }, { subnetType: EC2.SubnetType.PUBLIC }
+                 { subnetType: EC2.SubnetType.PRIVATE_WITH_NAT }, { subnetType: EC2.SubnetType.PUBLIC }
             ]
         });
         vpc.addInterfaceEndpoint(MetaData.PREFIX+"ssm-ep", {
 
             service: InterfaceVpcEndpointAwsService.SSM,
-            subnets: vpc.selectSubnets({subnetType:SubnetType.PRIVATE_ISOLATED}),
+            subnets: vpc.selectSubnets({subnetType:SubnetType.PRIVATE_WITH_NAT}),
             securityGroups: [this.SSMVPCEndpointSG]
         });
         vpc.addInterfaceEndpoint(MetaData.PREFIX+"sm-ep", {
 
             service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
-            subnets: vpc.selectSubnets({subnetType:SubnetType.PRIVATE_ISOLATED}),
+            subnets: vpc.selectSubnets({subnetType:SubnetType.PRIVATE_WITH_NAT}),
             securityGroups: [this.SecretsManagerVPCEndpointSG]
         });
 
@@ -165,10 +165,10 @@ export class NetworkStack extends Core.Stack {
         // Link: https://blog.codecentric.de/en/2019/09/aws-cdk-create-custom-vpc/
         var vpc = new EC2.Vpc(this, MetaData.PREFIX+"vpc", {
             cidr: "10.10.0.0/16", subnetConfiguration: [
-                { cidrMask: 24, name: MetaData.PREFIX+"private-sne", subnetType: EC2.SubnetType.PRIVATE_ISOLATED },
+                { cidrMask: 24, name: MetaData.PREFIX+"private-sne", subnetType: EC2.SubnetType.PRIVATE_WITH_NAT },
                 { cidrMask: 25, name: MetaData.PREFIX+"public-sne", subnetType: EC2.SubnetType.PUBLIC }
             ],
-            natGateways: 0,
+            natGateways: 1,
             maxAzs: 2
         });
         
@@ -215,7 +215,7 @@ export class NetworkStack extends Core.Stack {
             vpc: vpc,
             networkAclName: MetaData.PREFIX+"private-nacl",
             subnetSelection: {
-                subnetType: EC2.SubnetType.PRIVATE_ISOLATED
+                subnetType: EC2.SubnetType.PRIVATE_WITH_NAT
             }
         });
         privateNacl.addEntry(MetaData.PREFIX+"private-nacl-allow-all-inbound", {
