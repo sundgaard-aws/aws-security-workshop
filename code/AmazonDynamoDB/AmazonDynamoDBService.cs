@@ -14,11 +14,8 @@ namespace OM.AWS.Demo.S3
     {
         private DynamoDBContext dbContext;
 
-        public AmazonDynamoDBService() {
-            var regionName=System.Environment.GetEnvironmentVariable("AWS_REGION");
-            if(String.IsNullOrEmpty(regionName)) regionName=RegionEndpoint.EUNorth1.SystemName;
-            Console.WriteLine($"DynamoDB is using region {RegionEndpoint.EUNorth1.SystemName}");
-            var client = new AmazonDynamoDBClient(RegionEndpoint.EUNorth1);            
+        public AmazonDynamoDBService(RegionEndpoint region) {
+            var client = new AmazonDynamoDBClient(region);            
             dbContext = new DynamoDBContext(client);
         }
 

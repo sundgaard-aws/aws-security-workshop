@@ -17,6 +17,7 @@ namespace OM.AWS.Demo.ProPay
         private ISettingsService settingsService;
         private IAppContextService appContextService;
         private IObjectStoreService objectStoreService;
+        private string TempPath { get { return Path.GetTempPath(); } }
 
         public ProPayService(ICryptoService cryptoService, ISettingsService settingsService, IAppContextService appContextService, IObjectStoreService objectStoreService) {
             this.cryptoService=cryptoService;
@@ -62,7 +63,7 @@ namespace OM.AWS.Demo.ProPay
             //var paymentReceiptGUID=resp.Content.Headers.GetValues("paymentReceiptGUID").SingleOrDefault();
             if(proPayResponse==null || String.IsNullOrEmpty(proPayResponse.TransactionID)) throw new Exception("The payment receipt GUID from ProPay API was null, failed!");
             var paymentRequestBucketName=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"PaymentRequestBucketName");
-            var tempFileName="/tmp/"+Guid.NewGuid()+".pgp";
+            var tempFileName=Path.Join(TempPath, Guid.NewGuid()+".pgp");
             File.WriteAllText(tempFileName, encryptedPaymentsData);
             await objectStoreService.UploadObjectAsync(paymentRequestBucketName, new FileInfo(tempFileName));
             Console.WriteLine("ProcessPaymentsAsync ended.");

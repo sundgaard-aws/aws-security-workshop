@@ -1,3 +1,4 @@
+using Amazon;
 using Microsoft.Extensions.DependencyInjection;
 using OM.AWS.Demo.BL;
 using OM.AWS.Demo.ParameterStore;
@@ -14,11 +15,12 @@ namespace OM.AWS.Demo.Config
         public static readonly string AppName="aws-sec-";
         public static ServiceProvider Wireup() {
             var sc=new ServiceCollection();
+            var awsRegion=RegionEndpoint.EUNorth1;            
+            sc.AddSingleton<IObjectStoreService>(new AmazonS3Service(awsRegion));
+            sc.AddSingleton<IDatabaseService>(new AmazonDynamoDBService(awsRegion));
+            sc.AddSingleton<ISecretsService>(new AWSPublicSecretsManagerService(awsRegion));
+            sc.AddSingleton<ISettingsService>(new AWSPublicParameterStoreService(awsRegion));
             sc.AddSingleton<IPaymentService, ProPayService>();
-            sc.AddSingleton<IObjectStoreService, AmazonS3Service>();
-            sc.AddSingleton<IDatabaseService, AmazonDynamoDBService>();
-            sc.AddSingleton<ISecretsService, AWSSecretsManagerService>();
-            sc.AddSingleton<ISettingsService, AWSParameterStoreService>();
             sc.AddSingleton<ICryptoService, PGPCryptoService>();
             sc.AddSingleton<IAppContextService, AppConfig>();
             sc.AddSingleton<PaymentBO, PaymentBO>();

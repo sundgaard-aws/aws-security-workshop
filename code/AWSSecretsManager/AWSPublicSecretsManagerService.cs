@@ -9,20 +9,12 @@ using OM.AWS.Demo.SL;
 
 namespace OM.AWS.Demo.SecretsManager
 {
-    public class AWSSecretsManagerService : ISecretsService
+    public class AWSPublicSecretsManagerService : ISecretsService
     {
         private AmazonSecretsManagerClient client;
 
-        public AWSSecretsManagerService() {
-            var region=System.Environment.GetEnvironmentVariable("AWS_REGION");
-            //if(String.IsNullOrEmpty(region)) throw new Exception("Please specify the AWS_REGION!");
-            if(String.IsNullOrEmpty(region)) region=RegionEndpoint.EUNorth1.SystemName;
-            Console.WriteLine($"AWSRegion={region}");
-            //var region = Regions.getCurrentRegion();
-            var secretsManagerConfig = new AmazonSecretsManagerConfig { ServiceURL = "https://secretsmanager.eu-north-1.amazonaws.com" };
-            //AmazonSecretsManagerClient client = new AmazonSecretsManagerClient(accessid, secretkey, config);
-            //this.client = new AmazonSecretsManagerClient(RegionEndpoint.GetBySystemName(region));
-            this.client = new AmazonSecretsManagerClient(secretsManagerConfig);            
+        public AWSPublicSecretsManagerService(RegionEndpoint region) {
+            this.client = new AmazonSecretsManagerClient(region);
         }
 
         public async Task<T> RestoreSecret<T>(string secretName)

@@ -14,8 +14,8 @@ namespace OM.AWS.Demo.S3
         private string TempPath { get { return Path.Join(Path.GetTempPath(),"s3"); } }
 
 
-        public AmazonS3Service() {
-            s3Client=new AmazonS3Client(RegionEndpoint.EUNorth1);
+        public AmazonS3Service(RegionEndpoint region) {
+            s3Client=new AmazonS3Client(region);
         }
 
         public async Task<string> GetObjectAsyncAsString(string objectStoreName, string objectName)
