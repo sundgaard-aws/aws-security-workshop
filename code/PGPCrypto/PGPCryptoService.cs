@@ -52,8 +52,6 @@ namespace PGPCrypto
             pgpPrivateKeyStream.Seek(0,0);
             var publicKeyMaterial=await new StreamReader(pgpPublicKeyStream).ReadToEndAsync();
             var privateKeyMaterial=await new StreamReader(pgpPrivateKeyStream).ReadToEndAsync();
-            //Console.WriteLine($"publicKeyMaterial {publicKeyMaterial}");
-            //Console.WriteLine($"privateKeyMaterial {privateKeyMaterial}");
             var keyMaterial=new CryptoMaterialDTO {
                 PublicKey=publicKeyMaterial,
                 PrivateKey=privateKeyMaterial
@@ -68,11 +66,6 @@ namespace PGPCrypto
         private async Task<EncryptionKeys> GetEncryptionKeys() {
             var cryptoMaterialSecretName=await settingsService.GetSettingAsync(this.appContextService.GetAppPrefix()+"CryptoMaterialSecretName");     
             var cryptoMaterial=await secretsService.RestoreSecret<CryptoMaterialDTO>(cryptoMaterialSecretName);
-            //var secret=new SecretDTO();
-            //secretsService.CreateSecret("secret1", secret).ConfigureAwait(false).GetAwaiter().GetResult();
-            //var secret = secretsService.RestoreSecret<SecretDTO>("demo/secret2").ConfigureAwait(false).GetAwaiter().GetResult();
-            //Console.WriteLine($"KeyType={secret.keyType}");
-            //var encKeys=new EncryptionKeys(new FileInfo(Path.Join(TempPath,PGPPublicKeyName)), new FileInfo(Path.Join(TempPath,PGPPrivateKeyName)), this.passPhrase);
             var encKeys=new EncryptionKeys(cryptoMaterial.PublicKey, cryptoMaterial.PrivateKey, this.passPhrase);
             return encKeys;
         }

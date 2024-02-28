@@ -45,7 +45,7 @@ namespace OM.AWS.Demo.S3
         public async Task UploadObjectAsync(string objectStoreName, FileInfo fileToUpload) {
             var putObjectRequest=new PutObjectRequest{
                 BucketName=objectStoreName,
-                Key=fileToUpload.Name,
+                Key=fileToUpload.Name,                
                 FilePath=fileToUpload.FullName
             };
             await s3Client.PutObjectAsync(putObjectRequest);
